@@ -1,15 +1,24 @@
 
 from rest_framework import serializers
-from .models import UserProfile
+from .models import UserProfile, User
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        fields = ['id', 'user', 'avatar']
+        read_only_fields = ['user']
 
-    def get_avatar_url(self, obj):
-        if obj.avatar:
-            return obj.avatar.storage.url(obj.avatar.name)
-        return None
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password'],
+            is_active=True
+        )
+        return user

@@ -1,12 +1,13 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 from myapp.storage_backends import MinioStorage
 
 minio_storage = MinioStorage()
+
+class User(AbstractUser):
+    pass
+
 class UserProfile(models.Model):
-    name = models.CharField(max_length=255)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, storage=minio_storage)
 
-    # def save(self, *args, **kwargs):
-    #     print('Storage:', self.avatar.storage.__class__)
-    #     super().save(*args, **kwargs)
